@@ -37,7 +37,7 @@ see quazip/(un)zip.h files for details. Basically it's the zlib license.
 #include <QTcpSocket>
 #include <QTextCodec>
 
-#include <QtTest/QtTest>
+#include <QtTest>
 
 #include <quazip/quazip.h>
 #include <quazip/JlCompress.h>

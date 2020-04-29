@@ -41,7 +41,7 @@ see quazip/(un)zip.h files for details. Basically it's the zlib license.
 #include <QFileInfo>
 #include <QTextStream>
 
-#include <QtTest/QtTest>
+#include <QtTest>
 
 bool createTestFiles(const QStringList &fileNames, int size, const QString &dir)
 {
