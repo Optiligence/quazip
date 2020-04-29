@@ -1,13 +1,13 @@
 project(qztest)
 
-aux_source_directory(. SRCS)
-
 find_package(Qt5 COMPONENTS Network Test)
 if(NOT TARGET QuaZip::QuaZip)
 	find_package(QuaZip REQUIRED)
 endif()
 
-add_executable(${PROJECT_NAME} ${SRCS})
+aux_source_directory(. SRCS)
+add_executable(${PROJECT_NAME} ${SRCS} qztest.qrc)
+set_target_properties(${PROJECT_NAME} PROPERTIES AUTORCC ON)
 target_link_libraries(${PROJECT_NAME}
 	QuaZip::QuaZip
 	Qt5::Network

@@ -9,10 +9,10 @@
 
 #include <QtTest>
 
-#include "quazip/quazip.h"
-#include "quazip/quazipfile.h"
-#include "quazip/quazipfileinfo.h"
-#include "quazip/quazipnewinfo.h"
+#include <quazip.h>
+#include <quazipfile.h>
+#include <quazipfileinfo.h>
+#include <quazipnewinfo.h>
 
 #if QT_VERSION < 0x050000
 Q_DECLARE_METATYPE(QList<qint32>);
