@@ -33,7 +33,10 @@ function(create_cmake_config _target _config_in)
 		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	)
-	install(EXPORT ${_target}Targets DESTINATION lib/cmake/${_target})
+	install(EXPORT ${_target}Targets
+		NAMESPACE ${_target}::
+		DESTINATION lib/cmake/${_target}
+	)
 	install(FILES ${PROJECT_BINARY_DIR}/${_target}Config.cmake
 				  ${PROJECT_BINARY_DIR}/${_target}ConfigVersion.cmake
 		DESTINATION lib/cmake/${_target}
