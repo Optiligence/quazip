@@ -25,17 +25,18 @@ if(NOT BUILD_WITH_QT4)
     set(CMAKE_CXX_STANDARD 11)
     find_package(Qt5 REQUIRED COMPONENTS Core)
     set(QUAZIP_QTCORE_LIBRARIES Qt5::Core)
-    set(QUAZIP_LIB_VERSION_PREFIX Qt5)
+    set(QUAZIP_LIB_FILE_NAME quazip-qt5)
+    set(QUAZIP_LIB_TARGET_NAME Qt5)
 else()
     find_package(Qt4 4.5.0 REQUIRED COMPONENTS QtCore)
     set(QUAZIP_QTCORE_LIBRARIES Qt4::QtCore)
-    set(QUAZIP_LIB_VERSION_PREFIX Qt)
+    set(QUAZIP_LIB_FILE_NAME quazip-qt5)
+    set(QUAZIP_LIB_TARGET_NAME Qt4)
 endif()
 
 find_package(ZLIB REQUIRED)
 
-set(QUAZIP_LIB_TARGET_NAME ${QUAZIP_LIB_VERSION_PREFIX}${PROJECT_NAME} CACHE
-    INTERNAL "Target name of libquazip" FORCE)
+set(QUAZIP_LIB_NAME ${QUAZIP_LIB_FILE_NAME} CACHE INTERNAL "Target name of libquazip" FORCE)
 
 add_subdirectory(quazip)
 
