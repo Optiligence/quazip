@@ -19,6 +19,7 @@ endif()
 enable_testing()
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_DEBUG_POSTFIX d)
 
 if(NOT BUILD_WITH_QT4)
     set(CMAKE_CXX_STANDARD 11)
