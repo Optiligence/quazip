@@ -1,47 +1,64 @@
 project(QuaZip_Library VERSION ${QUAZIP_LIB_VERSION})
 
+include(GNUInstallDirs) # configurable CMAKE_INSTALL_*DIR
+
 aux_source_directory(. SRCS)
 file(GLOB PUBLIC_HEADERS "*.h")
+set(QUAZIP_INCLUDE_PATH quazip)
 
-add_library(${QUAZIP_LIB_TARGET_NAME} ${SRCS})
-set_target_properties(${QUAZIP_LIB_TARGET_NAME} PROPERTIES VERSION ${QUAZIP_LIB_VERSION} SOVERSION ${QUAZIP_LIB_SOVERSION})
-target_include_directories(${QUAZIP_LIB_TARGET_NAME} PUBLIC 
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
-    $<INSTALL_INTERFACE:include/${QUAZIP_LIB_TARGET_NAME}>
+foreach(_lib ${_libs})
+    add_library(${_lib} ${SRCS})
+    set_target_properties(${_lib} PROPERTIES
+        VERSION ${QUAZIP_LIB_VERSION}
+        SOVERSION ${QUAZIP_LIB_SOVERSION}
+    )
+    target_include_directories(${_lib} PUBLIC 
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${QUAZIP_INCLUDE_PATH}>
+    )
+    target_link_libraries(${_lib} ${QUAZIP_QTCORE_LIBRARIES} ZLIB::ZLIB)
+
+    if(BUILD_SHARED_LIBS)
+        target_compile_definitions(${_lib} PRIVATE QUAZIP_BUILD) # dllexport
+    else()
+        target_compile_definitions(${_lib} PUBLIC QUAZIP_STATIC) # suppress dllimport
+    endif()
+endforeach()
+
+set_target_properties(${QUAZIP_LIB_TARGET_NAME} PROPERTIES
+    OUTPUT_NAME ${QUAZIP_LIB_FILE_NAME}
+    PUBLIC_HEADER "${PUBLIC_HEADERS}"
 )
-target_link_libraries(${QUAZIP_LIB_TARGET_NAME} ${QUAZIP_QTCORE_LIBRARIES} ZLIB::ZLIB)
 
-if(BUILD_SHARED_LIBS)
-	target_compile_definitions(${QUAZIP_LIB_TARGET_NAME} PRIVATE QUAZIP_BUILD) # dllexport
-else()
-	target_compile_definitions(${QUAZIP_LIB_TARGET_NAME} PUBLIC QUAZIP_STATIC) # suppress dllimport
-endif()
+function(create_cmake_config _prefix _target _name _config_in)
+    include(CMakePackageConfigHelpers)
+    write_basic_package_version_file(${PROJECT_BINARY_DIR}/${_name}ConfigVersion.cmake
+        COMPATIBILITY AnyNewerVersion
+    )
+    configure_package_config_file(${_config_in} ${_name}Config.cmake
+        INSTALL_DESTINATION lib/cmake/${_name}
+    )
+    install(FILES ${PROJECT_BINARY_DIR}/${_name}Config.cmake
+                  ${PROJECT_BINARY_DIR}/${_name}ConfigVersion.cmake
+        DESTINATION lib/cmake/${_name}
+    )
 
-function(create_cmake_config _target _config_in)
-	include(CMakePackageConfigHelpers)
-	write_basic_package_version_file(${PROJECT_BINARY_DIR}/${_target}ConfigVersion.cmake
-		COMPATIBILITY AnyNewerVersion
-	)
-	configure_package_config_file(${_config_in} ${_target}Config.cmake
-		INSTALL_DESTINATION lib/cmake/${_target}
-	)
-
-	include(GNUInstallDirs)
-	install(TARGETS ${_target}
-		EXPORT ${_target}Targets
-		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-	)
-	install(EXPORT ${_target}Targets
-		NAMESPACE ${_target}::
-		DESTINATION lib/cmake/${_target}
-	)
-	install(FILES ${PROJECT_BINARY_DIR}/${_target}Config.cmake
-				  ${PROJECT_BINARY_DIR}/${_target}ConfigVersion.cmake
-		DESTINATION lib/cmake/${_target}
-	)
+    if(BUILD_SHARED_LIBS)
+        set(Flavor Shared)
+    else()
+        set(Flavor Static)
+    endif()
+    set(ExportSet ${_name}${Flavor}${_target}Targets)
+    install(TARGETS ${_target}
+        EXPORT ${ExportSet}
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${QUAZIP_INCLUDE_PATH}
+    )
+    install(EXPORT ${ExportSet}
+        NAMESPACE ${_prefix}::
+        DESTINATION lib/cmake/${_name}
+    )
 endfunction()
 
-create_cmake_config(${QUAZIP_LIB_TARGET_NAME} QuaZipConfig.cmake.in)
-install(FILES ${PUBLIC_HEADERS} DESTINATION "include/${QUAZIP_LIB_TARGET_NAME}")
+create_cmake_config(QuaZip ${QUAZIP_LIB_TARGET_NAME} QuaZip QuaZipConfig.cmake.in)
+
+install(TARGETS quazip)
