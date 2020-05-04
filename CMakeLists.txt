@@ -46,7 +46,6 @@ add_test(NAME qztest_test
 )
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --verbose DEPENDS qztest)
 
-if(UNIX AND NOT APPLE)
-    configure_file(quazip.pc.cmakein quazip.pc @ONLY)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/quazip.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
-endif()
+configure_file(quazip.pc.cmakein quazip.pc @ONLY)
+include(GNUInstallDirs) # configurable CMAKE_INSTALL_*DIR
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/quazip.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
