@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.14) # default install paths
 project(QuaZip)
 
 # CMP0042: Explicitly acknowledge MACOSX_RPATH
