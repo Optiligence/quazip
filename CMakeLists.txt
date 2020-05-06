@@ -35,6 +35,9 @@ else()
     set(QUAZIP_LIB_TARGET_NAME Qt4)
 endif()
 list(APPEND _libs ${QUAZIP_LIB_TARGET_NAME})
+if(WIN32)
+    set(QUAZIP_LIB_FILE_NAME ${QUAZIP_LIB_FILE_NAME}${QUAZIP_LIB_SOVERSION})
+endif()
 
 find_package(ZLIB REQUIRED)
 
