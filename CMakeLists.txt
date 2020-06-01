@@ -13,7 +13,7 @@ option(BUILD_SHARED_LIBS "" ON)
 option(BUILD_WITH_QT4 "Build QuaZip with Qt4 no matter if Qt5 was found" OFF)
 
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE RELEASE)
+	set(CMAKE_BUILD_TYPE RELEASE)
 endif()
 
 enable_testing()
@@ -21,23 +21,24 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_DEBUG_POSTFIX d)
 
+set(QUAZIP_LIB_FILE_NAME quazip)
+if(WIN32)
+	set(QUAZIP_LIB_FILE_NAME ${QUAZIP_LIB_FILE_NAME}${QUAZIP_LIB_SOVERSION})
+endif()
 if(NOT BUILD_WITH_QT4)
-    set(CMAKE_CXX_STANDARD 11)
-    find_package(Qt5 REQUIRED COMPONENTS Core)
-    set(QUAZIP_QTCORE_LIBRARIES Qt5::Core)
-    set(QUAZIP_LIB_FILE_NAME quazip-qt5)
-    set(QUAZIP_LIB_TARGET_NAME Qt5)
-    list(APPEND _libs quazip)
+	set(CMAKE_CXX_STANDARD 11)
+	find_package(Qt5 REQUIRED COMPONENTS Core)
+	set(QUAZIP_QTCORE_LIBRARIES Qt5::Core)
+	set(QUAZIP_LIB_FILE_NAME ${QUAZIP_LIB_FILE_NAME}-qt5)
+	set(QUAZIP_LIB_TARGET_NAME Qt5)
+	list(APPEND _libs quazip) # legacy name
 else()
-    find_package(Qt4 4.5.0 REQUIRED COMPONENTS QtCore)
-    set(QUAZIP_QTCORE_LIBRARIES Qt4::QtCore)
-    set(QUAZIP_LIB_FILE_NAME quazip-qt5)
-    set(QUAZIP_LIB_TARGET_NAME Qt4)
+	find_package(Qt4 4.5.0 REQUIRED COMPONENTS QtCore)
+	set(QUAZIP_QTCORE_LIBRARIES Qt4::QtCore)
+	set(QUAZIP_LIB_FILE_NAME ${QUAZIP_LIB_FILE_NAME}-qt4)
+	set(QUAZIP_LIB_TARGET_NAME Qt4)
 endif()
 list(APPEND _libs ${QUAZIP_LIB_TARGET_NAME})
-if(WIN32)
-    set(QUAZIP_LIB_FILE_NAME ${QUAZIP_LIB_FILE_NAME}${QUAZIP_LIB_SOVERSION})
-endif()
 
 find_package(ZLIB REQUIRED)
 
@@ -48,8 +49,8 @@ add_subdirectory(quazip)
 add_library(QuaZip::QuaZip ALIAS ${QUAZIP_LIB_TARGET_NAME})
 add_subdirectory(qztest EXCLUDE_FROM_ALL)
 add_test(NAME qztest_test
-    COMMAND qztest
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/quazip # preliminary hack to find the dll on windows
+	COMMAND qztest
+	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/quazip # preliminary hack to find the dll on windows
 )
 add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --verbose DEPENDS qztest)
 
