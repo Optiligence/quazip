@@ -1,18 +1,7 @@
 @PACKAGE_INIT@
 
-set(QUAZIP_LIBRARY @QUAZIP_LIB_TARGET_NAME@)#library name
-set(QUAZIP_QT4 @BUILD_WITH_QT4@)#flag
-set(QUAZIP_QT5 NOT @BUILD_WITH_QT4@)#flag
-
-if(QUAZIP_QT5)
-    find_package(Qt5 REQUIRED COMPONENTS Core)
-else()
-    find_package(Qt4 4.5.0 REQUIRED COMPONENTS QtCore)
-endif()
-
 find_package(ZLIB REQUIRED)
 
-# Our library dependencies (contains definitions for IMPORTED targets)
 if(DEFINED BUILD_SHARED_LIBS AND NOT BUILD_SHARED_LIBS)
 	include("${CMAKE_CURRENT_LIST_DIR}/QuaZipStaticQt4Targets.cmake" OPTIONAL)
 	include("${CMAKE_CURRENT_LIST_DIR}/QuaZipStaticQt5Targets.cmake" OPTIONAL)
@@ -22,9 +11,16 @@ else()
 endif()
 
 if(TARGET QuaZip::Qt5)
+	find_package(Qt5 REQUIRED COMPONENTS Core)
 	set_target_properties(QuaZip::Qt5 PROPERTIES IMPORTED_GLOBAL TRUE)
 	add_library(QuaZip::QuaZip ALIAS QuaZip::Qt5)
 elseif(TARGET QuaZip::Qt4)
+	find_package(Qt4 4.5.0 REQUIRED COMPONENTS QtCore)
 	set_target_properties(QuaZip::Qt4 PROPERTIES IMPORTED_GLOBAL TRUE)
 	add_library(QuaZip::QuaZip ALIAS QuaZip::Qt4)
 endif()
+
+# legacy
+set(QUAZIP_LIBRARIES QuaZip::Qt5 @QUAZIP_QTCORE_LIBRARIES@ ZLIB::ZLIB)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(QuaZip DEFAULT_MSG QUAZIP_LIBRARIES)
